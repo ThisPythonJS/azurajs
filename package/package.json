@@ -1,0 +1,62 @@
+{
+  "name": "azurajs",
+  "version": "1.0.0",
+  "description": "Modern TypeScript-first web framework with decorator-based routing, zero dependencies, and built for performance",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "require": "./src/index.ts",
+      "types": "./src/index.ts"
+    }
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "prepublishOnly": "echo '✅ Ready to publish'",
+    "test": "bun test"
+  },
+  "keywords": [
+    "typescript",
+    "framework",
+    "web",
+    "api",
+    "rest",
+    "decorators",
+    "router",
+    "http",
+    "server",
+    "backend",
+    "bun",
+    "node",
+    "zero-dependency",
+    "lightweight",
+    "fast"
+  ],
+  "author": "0xviny.dev@gmail.com",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/0xviny/azurajs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/0xviny/azurajs/issues"
+  },
+  "homepage": "https://github.com/0xviny/azurajs#readme",
+  "engines": {
+    "node": ">=18.0.0",
+    "bun": ">=1.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

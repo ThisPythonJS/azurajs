@@ -1,0 +1,11 @@
+tsconfig.json
+*.test.ts
+*.spec.ts
+__tests__
+.git
+.github
+.vscode
+.idea
+*.log
+node_modules
+.DS_Store
