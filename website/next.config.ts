@@ -1,9 +1,10 @@
 import { createMDX } from 'fumadocs-mdx/next';
+import { NextConfig } from 'next';
 
 const withMDX = createMDX();
 
-/** @type {import('next').NextConfig} */
-const config = {
+const config: NextConfig = {
+  distDir: "dist",
   reactStrictMode: true,
 };
 
