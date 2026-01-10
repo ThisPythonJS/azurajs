@@ -28,7 +28,7 @@ export class AzuraClient {
   private port: number = 3000;
   private initPromise: Promise<void>;
 
-  public router = new Router();
+  public router: Router;
   private middlewares: RequestHandler[] = [];
 
   constructor() {
@@ -41,7 +41,22 @@ export class AzuraClient {
       process.exit(1);
     }
     this.opts = config.getAll();
+    this.router = new Router(this.opts.debug || false);
     this.initPromise = this.init();
+    this.setupDefaultRoutes();
+  }
+
+  /**
+   * Configura rotas padrão para evitar erros 404 comuns
+   */
+  private setupDefaultRoutes() {
+    this.router.add(
+      "GET",
+      "/favicon.ico",
+      adaptRequestHandler((ctx: any) => {
+        ctx.res.status(204).send();
+      }) as any
+    );
   }
 
   public getConfig() {
@@ -92,6 +107,10 @@ export class AzuraClient {
   public delete = (p: string, ...h: RequestHandler[]) => this.addRoute("DELETE", p, ...h);
   public patch = (p: string, ...h: RequestHandler[]) => this.addRoute("PATCH", p, ...h);
 
+  public getRoutes() {
+    return this.router.listRoutes();
+  }
+
   public async listen(port = this.port) {
     await this.initPromise;
 
@@ -113,6 +132,14 @@ export class AzuraClient {
     this.server.listen(port, () => {
       logger("info", `[${who}] listening on http://localhost:${port}`);
       if (this.opts.server?.ipHost) getIP(port);
+
+      const routes = this.getRoutes();
+      if (routes.length > 0) {
+        logger("info", `\n📋 Registered routes (${routes.length}):`);
+        routes.forEach((r) => {
+          logger("info", `   ${r.method.padEnd(7)} ${r.path}`);
+        });
+      }
     });
 
     return this.server;
@@ -124,13 +151,13 @@ export class AzuraClient {
    * ```typescript
    * const app = new AzuraClient();
    * app.get('/', (req, res) => res.text('Hello World!'));
-   * 
+   *
    * // Use with Bun
    * Bun.serve({
    *   port: 3000,
    *   fetch: app.fetch.bind(app),
    * });
-   * 
+   *
    * // Use with Deno
    * Deno.serve({ port: 3000 }, app.fetch.bind(app));
    * ```
@@ -140,13 +167,13 @@ export class AzuraClient {
 
     const url = new URL(request.url);
     const urlPath = url.pathname;
-    
+
     const safeQuery: Record<string, string> = {};
     if (url.search) {
       const rawQuery = parseQS(url.search.slice(1));
       for (const k in rawQuery) {
         const v = rawQuery[k];
-        safeQuery[k] = Array.isArray(v) ? v[0] || "" : v as string;
+        safeQuery[k] = Array.isArray(v) ? v[0] || "" : (v as string);
       }
     }
 
@@ -177,12 +204,12 @@ export class AzuraClient {
     }
 
     const protocol = url.protocol.slice(0, -1) as "http" | "https";
-    
+
     const headersObj: Record<string, string | string[]> = {};
     request.headers.forEach((value, key) => {
       headersObj[key] = value;
     });
-    
+
     const rawReq: Partial<RequestServer> = {
       method: request.method,
       url: url.pathname + url.search,
@@ -288,12 +315,12 @@ export class AzuraClient {
     try {
       const { handlers, params } = this.router.find(request.method, urlPath || "/");
       rawReq.params = params || {};
-      
+
       const chain = [
         ...this.middlewares.map(adaptRequestHandler),
         ...handlers.map(adaptRequestHandler),
       ];
-      
+
       let idx = 0;
       const next = async (err?: any) => {
         if (err) return errorHandler(err);
@@ -311,7 +338,7 @@ export class AzuraClient {
           return errorHandler(e);
         }
       };
-      
+
       await next();
     } catch (err) {
       errorHandler(err);

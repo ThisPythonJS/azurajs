@@ -1,4 +1,6 @@
 tsconfig.json
+tsconfig.build.json
+tsup.config.ts
 *.test.ts
 *.spec.ts
 __tests__
@@ -9,3 +11,5 @@ __tests__
 *.log
 node_modules
 .DS_Store
+src/
+!dist/

@@ -6,11 +6,14 @@ icon: Route
 
 # Routing 🛣️
 
-AzuraJS provides a powerful and flexible routing system based on decorators and pattern matching.
+AzuraJS provides a powerful and flexible routing system. You can use decorators with TypeScript or the functional API with JavaScript.
 
 ## Route Basics 📍
 
-Routes are defined using HTTP method decorators on controller methods.
+<Tabs items={['TypeScript', 'JavaScript']}>
+<Tab value="TypeScript">
+
+Routes are defined using HTTP method decorators on controller methods:
 
 ```typescript
 import { Controller, Get, Param } from "azurajs/decorators";
@@ -25,9 +28,37 @@ export class UserController {
 }
 ```
 
+</Tab>
+<Tab value="JavaScript">
+
+Routes are defined using functional methods:
+
+```javascript
+import { AzuraClient } from "azurajs";
+
+const app = new AzuraClient();
+
+app.get("/api/users", (req, res) => {
+  // GET /api/users
+  res.json({ users: [] });
+});
+
+app.get("/api/users/:id", (req, res) => {
+  // GET /api/users/123
+  const { id } = req.params;
+  res.json({ id });
+});
+```
+
+</Tab>
+</Tabs>
+
 ## Route Paths 🗺️
 
 ### Static Paths
+
+<Tabs items={['TypeScript', 'JavaScript']}>
+<Tab value="TypeScript">
 
 ```typescript
 @Get("/users")  // Exact match only
@@ -37,9 +68,28 @@ getUsers() {}
 getActiveUsers() {}
 ```
 
+</Tab>
+<Tab value="JavaScript">
+
+```javascript
+app.get("/users", (req, res) => {
+  res.json({ users: [] });
+});
+
+app.get("/users/active", (req, res) => {
+  res.json({ activeUsers: [] });
+});
+```
+
+</Tab>
+</Tabs>
+
 ### Dynamic Parameters
 
 Use `:paramName` for route parameters:
+
+<Tabs items={['TypeScript', 'JavaScript']}>
+<Tab value="TypeScript">
 
 ```typescript
 @Get("/:id")  // Matches /123, /abc, etc.
@@ -52,9 +102,30 @@ getPost(
 ) {}
 ```
 
+</Tab>
+<Tab value="JavaScript">
+
+```javascript
+app.get("/:id", (req, res) => {
+  const { id } = req.params;  // Matches /123, /abc, etc.
+  res.json({ id });
+});
+
+app.get("/:userId/posts/:postId", (req, res) => {
+  const { userId, postId } = req.params;
+  res.json({ userId, postId });
+});
+```
+
+</Tab>
+</Tabs>
+
 ### Query Parameters
 
 Query parameters are not part of the route path:
+
+<Tabs items={['TypeScript', 'JavaScript']}>
+<Tab value="TypeScript">
 
 ```typescript
 import { Get, Query } from "azurajs/decorators";
@@ -66,6 +137,21 @@ search(@Query("q") query: string, @Query("limit") limit: string) {
   return { query, limit };
 }
 ```
+
+</Tab>
+<Tab value="JavaScript">
+
+```javascript
+// Route: GET /search
+// URL: GET /search?q=john&limit=10
+app.get("/search", (req, res) => {
+  const { q, limit } = req.query;
+  res.json({ query: q, limit });
+});
+```
+
+</Tab>
+</Tabs>
 
 ## Route Patterns 🎨
 
@@ -129,6 +215,9 @@ export class UserController {
 
 All standard HTTP methods are supported:
 
+<Tabs items={['TypeScript', 'JavaScript']}>
+<Tab value="TypeScript">
+
 ```typescript
 @Controller("/api/posts")
 export class PostController {
@@ -161,6 +250,61 @@ export class PostController {
   }
 }
 ```
+
+</Tab>
+<Tab value="JavaScript">
+
+```javascript
+// Read all
+app.get("/api/posts", (req, res) => {
+  res.json({ posts: [] });
+});
+
+// Read one
+app.get("/api/posts/:id", (req, res) => {
+  const { id } = req.params;
+  res.json({ id });
+});
+
+// Create
+app.post("/api/posts", (req, res) => {
+  const data = req.body;
+  res.status(201).json({ data });
+});
+
+// Update (full)
+app.put("/api/posts/:id", (req, res) => {
+  const { id } = req.params;
+  const data = req.body;
+  res.json({ id, data });
+});
+
+// Update (partial)
+app.patch("/api/posts/:id", (req, res) => {
+  const { id } = req.params;
+  const data = req.body;
+  res.json({ id, data });
+});
+
+// Delete
+app.delete("/api/posts/:id", (req, res) => {
+  const { id } = req.params;
+  res.status(204).send();
+});
+
+// Check existence
+app.head("/api/posts/:id", (req, res) => {
+  res.status(200).end();
+});
+
+// CORS preflight
+app.options("/api/posts", (req, res) => {
+  res.set("Allow", "GET, POST").end();
+});
+```
+
+</Tab>
+</Tabs>
 
 ## Programmatic Routes 🔨
 

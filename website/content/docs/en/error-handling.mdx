@@ -12,6 +12,9 @@ Proper error handling ensures your API returns meaningful responses and stays re
 
 Use the built-in `HttpError` class for HTTP errors:
 
+<Tabs items={['TypeScript', 'JavaScript']}>
+<Tab value="TypeScript">
+
 ```typescript
 import { Get, Param, Res } from "azurajs/decorators";
 import { HttpError } from "azurajs/http-error";
@@ -29,9 +32,33 @@ getUser(@Param("id") id: string, @Res() res: ResponseServer) {
 }
 ```
 
+</Tab>
+<Tab value="JavaScript">
+
+```javascript
+import { HttpError } from "azurajs/http-error";
+
+app.get("/:id", (req, res) => {
+  const { id } = req.params;
+  const user = users.find(u => u.id === id);
+  
+  if (!user) {
+    throw new HttpError(404, "User not found");
+  }
+  
+  res.json({ user });
+});
+```
+
+</Tab>
+</Tabs>
+
 ## Try-Catch Blocks 🛡️
 
 Wrap async operations in try-catch:
+
+<Tabs items={['TypeScript', 'JavaScript']}>
+<Tab value="TypeScript">
 
 ```typescript
 @Post()
@@ -48,6 +75,27 @@ async createUser(@Body() data: any, @Res() res: ResponseServer) {
   }
 }
 ```
+
+</Tab>
+<Tab value="JavaScript">
+
+```javascript
+app.post("/users", async (req, res) => {
+  try {
+    const user = await database.users.create(req.body);
+    res.status(201).json({ user });
+  } catch (error) {
+    if (error instanceof HttpError) {
+      res.status(error.status).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+});
+```
+
+</Tab>
+</Tabs>
 
 ## Error Response Format 📋
 
@@ -93,6 +141,9 @@ getUser(@Param("id") id: string, @Res() res: ResponseServer) {
 
 Create a global error handling middleware:
 
+<Tabs items={['TypeScript', 'JavaScript']}>
+<Tab value="TypeScript">
+
 ```typescript
 import { HttpError } from "azurajs/http-error";
 import type { RequestHandler } from "azurajs/types";
@@ -130,6 +181,49 @@ export const errorHandler: RequestHandler = async (req, res, next) => {
 const app = new AzuraClient();
 app.use(errorHandler);
 ```
+
+</Tab>
+<Tab value="JavaScript">
+
+```javascript
+import { HttpError } from "azurajs/http-error";
+
+export const errorHandler = async (req, res, next) => {
+  try {
+    await next();
+  } catch (error) {
+    console.error(`[Error] ${req.method} ${req.url}:`, error);
+    
+    if (error instanceof HttpError) {
+      res.status(error.status).json({
+        error: error.message,
+        status: error.status,
+        timestamp: new Date().toISOString(),
+        path: req.url,
+      });
+    } else if (error.name === "ValidationError") {
+      res.status(400).json({
+        error: "Validation failed",
+        details: error.details,
+      });
+    } else {
+      res.status(500).json({
+        error: process.env.NODE_ENV === "production" 
+          ? "Internal server error" 
+          : error.message,
+        ...(process.env.NODE_ENV !== "production" && { stack: error.stack }),
+      });
+    }
+  }
+};
+
+// Apply globally
+const app = new AzuraClient();
+app.use(errorHandler);
+```
+
+</Tab>
+</Tabs>
 
 ## Validation Errors ✅
 

@@ -24,9 +24,9 @@ jobs:
         working-directory: package
         run: npm install
 
-      # - name: Build
-      #   working-directory: package
-      #   run: npm run build
+      - name: Build
+        working-directory: package
+        run: npm run build
 
       - name: Publish to npm
         working-directory: package

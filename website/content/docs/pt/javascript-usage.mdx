@@ -1,0 +1,299 @@
+---
+title: Uso com JavaScript
+description: Usando AzuraJS com JavaScript puro
+icon: Code
+---
+
+# Uso com JavaScript 📝
+
+AzuraJS funciona perfeitamente com JavaScript puro! Embora o framework seja TypeScript-first, você pode usar todos os recursos com JavaScript usando a API funcional.
+
+## Por que JavaScript? 🤔
+
+- **Simplicidade** - Não precisa de transpilação para projetos simples
+- **Familiar** - API similar ao Express que desenvolvedores JavaScript conhecem
+- **Flexível** - Use decorators em TypeScript, funções em JavaScript
+- **Progressivo** - Comece com JS, migre para TS quando necessário
+
+## Início Rápido 🚀
+
+### 1. Instalar AzuraJS
+
+```bash
+npm install azurajs
+```
+
+### 2. Criar Configuração
+
+```javascript title="azura.config.js"
+const config = {
+  environment: "development",
+  server: {
+    port: 3000,
+    cluster: false,
+  },
+  logging: {
+    enabled: true,
+    showDetails: true,
+  },
+};
+
+export default config;
+```
+
+### 3. Criar Seu Servidor
+
+```javascript title="index.js"
+import { AzuraClient } from "azurajs";
+import { createLoggingMiddleware } from "azurajs/middleware";
+
+const app = new AzuraClient();
+const logger = createLoggingMiddleware(app.getConfig());
+app.use(logger);
+
+app.get("/", (req, res) => {
+  res.json({ message: "Olá do JavaScript!" });
+});
+
+await app.listen();
+```
+
+### 4. Executar
+
+```bash
+bun run index.js
+# ou
+node index.js
+```
+
+## API Funcional 🔧
+
+### Definindo Rotas
+
+```javascript
+import { AzuraClient } from "azurajs";
+
+const app = new AzuraClient();
+
+// Rota GET
+app.get("/users", (req, res) => {
+  res.json({ users: [] });
+});
+
+// Rota POST
+app.post("/users", (req, res) => {
+  const body = req.body;
+  res.status(201).json({ created: body });
+});
+
+// Rota PUT
+app.put("/users/:id", (req, res) => {
+  const { id } = req.params;
+  res.json({ id, updated: true });
+});
+
+// Rota DELETE
+app.delete("/users/:id", (req, res) => {
+  const { id } = req.params;
+  res.status(204).send();
+});
+```
+
+### Parâmetros de Requisição
+
+```javascript
+// Parâmetros de rota
+app.get("/users/:id/posts/:postId", (req, res) => {
+  const { id, postId } = req.params;
+  res.json({ userId: id, postId });
+});
+
+// Parâmetros de query
+app.get("/search", (req, res) => {
+  const { q, limit = 10, page = 1 } = req.query;
+  res.json({ query: q, limit: Number(limit), page: Number(page) });
+});
+
+// Corpo da requisição
+app.post("/data", (req, res) => {
+  const body = req.body;
+  res.json({ received: body });
+});
+
+// Headers
+app.get("/info", (req, res) => {
+  const userAgent = req.headers["user-agent"];
+  res.json({ userAgent });
+});
+```
+
+## Middleware em JavaScript 🔌
+
+### Middleware Básico
+
+```javascript
+// Log simples
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
+
+// Tempo de requisição
+app.use((req, res, next) => {
+  const start = Date.now();
+  next();
+  const duration = Date.now() - start;
+  console.log(`Requisição levou ${duration}ms`);
+});
+```
+
+### Middleware de Autenticação
+
+```javascript
+const authMiddleware = (req, res, next) => {
+  const token = req.headers.authorization;
+  
+  if (!token) {
+    return res.status(401).json({ error: "Sem token" });
+  }
+  
+  // Verificar token
+  req.user = { id: 1, name: "Usuário" };
+  next();
+};
+
+// Aplicar em rotas específicas
+app.get("/protected", authMiddleware, (req, res) => {
+  res.json({ user: req.user });
+});
+```
+
+## Exemplo Completo 🎯
+
+API REST completa em JavaScript:
+
+```javascript title="server.js"
+import { AzuraClient } from "azurajs";
+import { createLoggingMiddleware } from "azurajs/middleware";
+
+const app = new AzuraClient();
+const logger = createLoggingMiddleware(app.getConfig());
+app.use(logger);
+
+// Banco de dados em memória
+const users = [
+  { id: 1, name: "Alice", email: "alice@example.com" },
+  { id: 2, name: "Bob", email: "bob@example.com" },
+];
+
+let nextId = 3;
+
+// Listar todos os usuários
+app.get("/api/users", (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + Number(limit);
+  
+  res.json({
+    data: users.slice(startIndex, endIndex),
+    pagination: {
+      page: Number(page),
+      limit: Number(limit),
+      total: users.length,
+    },
+  });
+});
+
+// Buscar usuário por ID
+app.get("/api/users/:id", (req, res) => {
+  const { id } = req.params;
+  const user = users.find(u => u.id === Number(id));
+  
+  if (!user) {
+    return res.status(404).json({ error: "Usuário não encontrado" });
+  }
+  
+  res.json({ data: user });
+});
+
+// Criar usuário
+app.post("/api/users", (req, res) => {
+  const { name, email } = req.body;
+  
+  if (!name || !email) {
+    return res.status(400).json({ error: "Nome e email obrigatórios" });
+  }
+  
+  const user = {
+    id: nextId++,
+    name,
+    email,
+    createdAt: new Date().toISOString(),
+  };
+  
+  users.push(user);
+  res.status(201).json({ data: user });
+});
+
+// Atualizar usuário
+app.put("/api/users/:id", (req, res) => {
+  const { id } = req.params;
+  const { name, email } = req.body;
+  
+  const user = users.find(u => u.id === Number(id));
+  
+  if (!user) {
+    return res.status(404).json({ error: "Usuário não encontrado" });
+  }
+  
+  if (name) user.name = name;
+  if (email) user.email = email;
+  user.updatedAt = new Date().toISOString();
+  
+  res.json({ data: user });
+});
+
+// Deletar usuário
+app.delete("/api/users/:id", (req, res) => {
+  const { id } = req.params;
+  const index = users.findIndex(u => u.id === Number(id));
+  
+  if (index === -1) {
+    return res.status(404).json({ error: "Usuário não encontrado" });
+  }
+  
+  users.splice(index, 1);
+  res.status(204).send();
+});
+
+// Health check
+app.get("/health", (req, res) => {
+  res.json({ status: "saudável", timestamp: new Date().toISOString() });
+});
+
+// Iniciar servidor
+await app.listen();
+```
+
+## Melhores Práticas ✨
+
+<Callout type="tip">
+  **Use const** - Prefira `const` ao invés de `let` quando possível
+</Callout>
+
+<Callout type="tip">
+  **Desestruture** - Use desestruturação para código mais limpo: `const { id } = req.params`
+</Callout>
+
+<Callout type="tip">
+  **Async/await** - Use async/await ao invés de callbacks
+</Callout>
+
+## Próximos Passos 📚
+
+<Cards>
+  <Card title="Início Rápido" href="quick-start" description="Construa sua primeira API" />
+  <Card title="Middleware" href="middleware" description="Aprenda sobre middleware" />
+  <Card title="Roteamento" href="routing" description="Padrões avançados de rotas" />
+  <Card title="TypeScript" href="typescript-support" description="Migrar para TypeScript" />
+</Cards>

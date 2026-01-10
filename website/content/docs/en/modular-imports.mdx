@@ -8,6 +8,10 @@ icon: Package
 
 AzuraJS supports modular imports for better tree-shaking and smaller bundle sizes. Import only what you need!
 
+<Callout type="info">
+**JavaScript Note:** All imports work the same in JavaScript! Just remove type imports and TypeScript-specific syntax.
+</Callout>
+
 ## Main Package
 
 Import everything from the main package:
@@ -83,6 +87,9 @@ import { Router } from "azurajs/router";
 
 ## Complete Example
 
+<Tabs items={['TypeScript', 'JavaScript']}>
+<Tab value="TypeScript">
+
 ```typescript
 // Main imports
 import { AzuraClient, applyDecorators } from "azurajs";
@@ -127,6 +134,45 @@ applyDecorators(app, [UserController]);
 
 await app.listen(3000);
 ```
+
+</Tab>
+<Tab value="JavaScript">
+
+```javascript
+// Main imports
+import { AzuraClient } from "azurajs";
+
+// Middleware
+import { createLoggingMiddleware } from "azurajs/middleware";
+
+// Utilities
+import { HttpError } from "azurajs/http-error";
+
+const app = new AzuraClient();
+app.use(createLoggingMiddleware(app.getConfig()));
+
+// Routes
+app.get("/users", (req, res) => {
+  res.json({ users: [] });
+});
+
+app.get("/users/:id", (req, res) => {
+  const { id } = req.params;
+  if (id === "0") {
+    throw new HttpError(404, "User not found");
+  }
+  res.json({ id, name: "User" });
+});
+
+app.post("/users", (req, res) => {
+  res.status(201).json({ id: Date.now(), ...req.body });
+});
+
+await app.listen(3000);
+```
+
+</Tab>
+</Tabs>
 
 ## Benefits
 

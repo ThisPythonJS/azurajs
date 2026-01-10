@@ -46,6 +46,7 @@ npm install azurajs
 - **Zero Dependencies** 📦 - No external dependencies. Lightweight and efficient.
 - **Decorator-Based** 🎯 - Clean, intuitive routing with TypeScript decorators.
 - **Type-Safe** 🛡️ - Full TypeScript support with complete type inference.
+- **JavaScript Support** 📝 - Works seamlessly with plain JavaScript too.
 - **Multi-Runtime** 🌍 - Works on Node.js, Bun, Deno, Cloudflare Workers, Vercel Edge, and more.
 - **High Performance** ⚡ - Built for speed with minimal overhead and optimized routing.
 - **Modular Imports** 🔧 - Tree-shakeable imports for optimal bundle size (70% smaller).
@@ -57,6 +58,8 @@ npm install azurajs
 The documentation is available on [azura.js.org](https://azura.js.org).
 
 ## Example
+
+### TypeScript with Decorators
 
 ```typescript
 import { AzuraClient, applyDecorators } from "azurajs";
@@ -85,6 +88,34 @@ class UserController {
 
 const app = new AzuraClient();
 applyDecorators(app, [UserController]);
+
+await app.listen(3000);
+```
+
+### JavaScript (Functional Style)
+
+```javascript
+import { AzuraClient } from "azurajs";
+import { createLoggingMiddleware } from "azurajs/middleware";
+
+const app = new AzuraClient();
+const logger = createLoggingMiddleware(app.getConfig());
+app.use(logger);
+
+// Define routes
+app.get("/api/users", (req, res) => {
+  res.json({ users: [] });
+});
+
+app.get("/api/users/:id", (req, res) => {
+  const { id } = req.params;
+  res.json({ id: Number(id), name: `User ${id}` });
+});
+
+app.post("/api/users", (req, res) => {
+  const body = req.body;
+  res.status(201).json({ id: Date.now(), ...body });
+});
 
 await app.listen(3000);
 ```

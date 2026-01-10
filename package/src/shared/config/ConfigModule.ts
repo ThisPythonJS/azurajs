@@ -10,6 +10,7 @@ type SupportedConfigFile = ".ts" | ".json" | ".yaml" | ".yml";
 
 export type ConfigTypes = {
   environment?: "development" | "production";
+  debug?: boolean;
   server?: {
     port?: number;
     cluster?: boolean;

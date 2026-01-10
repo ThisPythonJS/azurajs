@@ -12,6 +12,9 @@ AzuraJS provides built-in utilities for parsing and serializing cookies.
 
 Extract cookies from request headers:
 
+<Tabs items={['TypeScript', 'JavaScript']}>
+<Tab value="TypeScript">
+
 ```typescript
 import { Get, Req, Res } from "azurajs/decorators";
 import { parseCookiesHeader } from "azurajs/cookies";
@@ -26,9 +29,29 @@ getProfile(@Req() req: RequestServer, @Res() res: ResponseServer) {
 }
 ```
 
+</Tab>
+<Tab value="JavaScript">
+
+```javascript
+import { parseCookiesHeader } from "azurajs/cookies";
+
+app.get("/profile", (req, res) => {
+  const cookies = parseCookiesHeader(req.headers.cookie || "");
+  const sessionId = cookies.sessionId;
+  
+  res.json({ sessionId });
+});
+```
+
+</Tab>
+</Tabs>
+
 ## Setting Cookies 🔧
 
 Set cookies in the response:
+
+<Tabs items={['TypeScript', 'JavaScript']}>
+<Tab value="TypeScript">
 
 ```typescript
 import { Post, Body, Res } from "azurajs/decorators";
@@ -51,6 +74,31 @@ login(@Body() credentials: any, @Res() res: ResponseServer) {
   res.json({ success: true });
 }
 ```
+
+</Tab>
+<Tab value="JavaScript">
+
+```javascript
+import { serializeCookie } from "azurajs/cookies";
+
+app.post("/login", (req, res) => {
+  // Authenticate user...
+  const sessionId = generateSessionId();
+  
+  const cookie = serializeCookie("sessionId", sessionId, {
+    httpOnly: true,
+    secure: true,
+    maxAge: 3600, // 1 hour
+    path: "/",
+  });
+  
+  res.setHeader("Set-Cookie", cookie);
+  res.json({ success: true });
+});
+```
+
+</Tab>
+</Tabs>
 
 ## Cookie Options ⚙️
 

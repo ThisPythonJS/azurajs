@@ -4,6 +4,25 @@ This directory contains example applications demonstrating various features of A
 
 > **Note:** These examples import from `../package/src` (local development). When using AzuraJS in your own project, import from `"azurajs"` instead.
 
+## Folder Structure
+
+```
+examples/
+├── controllers/         # Example controllers
+├── servers/            # Server implementation examples
+│   ├── basic-server.js       # Basic server example
+│   ├── bun-server.ts         # Bun.serve example
+│   ├── cookies-server.js     # Cookie handling
+│   ├── crud-api.js           # CRUD operations
+│   ├── error-handling.js     # Error handling
+│   ├── middleware-server.js  # Middleware usage
+│   ├── plugins-server.js     # Plugin system
+│   └── test-debug.js         # Debug example
+├── types/              # Type definitions
+├── index.ts            # Main entry point
+└── azura.config.ts     # Configuration file
+```
+
 ## Getting Started
 
 ### Using Node.js / Bun (default)
@@ -16,13 +35,13 @@ bun run start
 ### Using Bun.serve
 
 ```bash
-bun run bun-server.ts
+bun run servers/bun-server.ts
 ```
 
 ### Using Deno
 
 ```bash
-deno run --allow-net --allow-read deno-server.ts
+deno run --allow-net --allow-read servers/deno-server.ts
 ```
 
 The server will start at `http://localhost:3000`
@@ -32,13 +51,31 @@ The server will start at `http://localhost:3000`
 ### 1. Standard Server (`index.ts`)
 Default AzuraJS server using built-in Node.js HTTP server with decorators and controllers.
 
-### 2. Bun Server (`bun-server.ts`)
+### 2. Basic Server (`servers/basic-server.js`)
+Simple server setup demonstrating the fundamental concepts.
+
+### 3. Bun Server (`servers/bun-server.ts`)
 Example using AzuraJS with Bun's native `Bun.serve` for maximum performance.
 
-### 3. Deno Server (`deno-server.ts`)
+### 4. Deno Server (`servers/deno-server.ts`)
 Example using AzuraJS with Deno's `Deno.serve` runtime.
 
-### 4. Cloudflare Worker (`cloudflare-worker.ts`)
+### 5. Cookies Server (`servers/cookies-server.js`)
+Example demonstrating cookie handling and management.
+
+### 6. CRUD API (`servers/crud-api.js`)
+Full CRUD operations example with RESTful endpoints.
+
+### 7. Error Handling (`servers/error-handling.js`)
+Custom error handling and HTTP error responses.
+
+### 8. Middleware Server (`servers/middleware-server.js`)
+Example showcasing middleware implementation and usage.
+
+### 9. Plugins Server (`servers/plugins-server.js`)
+Plugin system demonstration with CORS and rate limiting.
+
+### 10. Cloudflare Worker (`servers/cloudflare-worker.ts`)
 Example deploying AzuraJS to Cloudflare Workers edge network.
 
 ## Available Routes

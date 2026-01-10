@@ -1,145 +1,163 @@
 {
   "name": "azurajs",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "description": "Modern TypeScript-first web framework with decorator-based routing, zero dependencies, and built for performance",
-  "main": "./src/index.ts",
-  "module": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "type": "module",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
-      "import": "./src/index.ts",
-      "default": "./src/index.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.js"
     },
     "./decorators": {
-      "types": "./src/decorators/index.ts",
-      "import": "./src/decorators/index.ts",
-      "default": "./src/decorators/index.ts"
+      "types": "./dist/decorators.d.ts",
+      "import": "./dist/decorators.js",
+      "require": "./dist/decorators.cjs",
+      "default": "./dist/decorators.js"
     },
     "./middleware": {
-      "types": "./src/middleware/index.ts",
-      "import": "./src/middleware/index.ts",
-      "default": "./src/middleware/index.ts"
+      "types": "./dist/middleware.d.ts",
+      "import": "./dist/middleware.js",
+      "require": "./dist/middleware.cjs",
+      "default": "./dist/middleware.js"
     },
     "./types": {
-      "types": "./src/types/index.ts",
-      "import": "./src/types/index.ts",
-      "default": "./src/types/index.ts"
+      "types": "./dist/types.d.ts",
+      "import": "./dist/types.js",
+      "require": "./dist/types.cjs",
+      "default": "./dist/types.js"
     },
     "./infra": {
-      "types": "./src/infra/index.ts",
-      "import": "./src/infra/index.ts",
-      "default": "./src/infra/index.ts"
+      "types": "./dist/infra.d.ts",
+      "import": "./dist/infra.js",
+      "require": "./dist/infra.cjs",
+      "default": "./dist/infra.js"
     },
     "./router": {
-      "types": "./src/infra/Router.ts",
-      "import": "./src/infra/Router.ts",
-      "default": "./src/infra/Router.ts"
+      "types": "./dist/router.d.ts",
+      "import": "./dist/router.js",
+      "require": "./dist/router.cjs",
+      "default": "./dist/router.js"
     },
     "./config": {
-      "types": "./src/shared/config/index.ts",
-      "import": "./src/shared/config/index.ts",
-      "default": "./src/shared/config/index.ts"
+      "types": "./dist/config.d.ts",
+      "import": "./dist/config.js",
+      "require": "./dist/config.cjs",
+      "default": "./dist/config.js"
     },
     "./plugins": {
-      "types": "./src/shared/plugins/index.ts",
-      "import": "./src/shared/plugins/index.ts",
-      "default": "./src/shared/plugins/index.ts"
+      "types": "./dist/plugins.d.ts",
+      "import": "./dist/plugins.js",
+      "require": "./dist/plugins.cjs",
+      "default": "./dist/plugins.js"
     },
     "./cors": {
-      "types": "./src/shared/plugins/CORSPlugin.ts",
-      "import": "./src/shared/plugins/CORSPlugin.ts",
-      "default": "./src/shared/plugins/CORSPlugin.ts"
+      "types": "./dist/cors.d.ts",
+      "import": "./dist/cors.js",
+      "require": "./dist/cors.cjs",
+      "default": "./dist/cors.js"
     },
     "./rate-limit": {
-      "types": "./src/shared/plugins/RateLimitPlugin.ts",
-      "import": "./src/shared/plugins/RateLimitPlugin.ts",
-      "default": "./src/shared/plugins/RateLimitPlugin.ts"
+      "types": "./dist/rate-limit.d.ts",
+      "import": "./dist/rate-limit.js",
+      "require": "./dist/rate-limit.cjs",
+      "default": "./dist/rate-limit.js"
     },
     "./utils": {
-      "types": "./src/utils/index.ts",
-      "import": "./src/utils/index.ts",
-      "default": "./src/utils/index.ts"
+      "types": "./dist/utils.d.ts",
+      "import": "./dist/utils.js",
+      "require": "./dist/utils.cjs",
+      "default": "./dist/utils.js"
     },
     "./cookies": {
-      "types": "./src/utils/cookies/index.ts",
-      "import": "./src/utils/cookies/index.ts",
-      "default": "./src/utils/cookies/index.ts"
+      "types": "./dist/cookies.d.ts",
+      "import": "./dist/cookies.js",
+      "require": "./dist/cookies.cjs",
+      "default": "./dist/cookies.js"
     },
     "./validators": {
-      "types": "./src/utils/validators/index.ts",
-      "import": "./src/utils/validators/index.ts",
-      "default": "./src/utils/validators/index.ts"
+      "types": "./dist/validators.d.ts",
+      "import": "./dist/validators.js",
+      "require": "./dist/validators.cjs",
+      "default": "./dist/validators.js"
     },
     "./logger": {
-      "types": "./src/utils/Logger.ts",
-      "import": "./src/utils/Logger.ts",
-      "default": "./src/utils/Logger.ts"
+      "types": "./dist/logger.d.ts",
+      "import": "./dist/logger.js",
+      "require": "./dist/logger.cjs",
+      "default": "./dist/logger.js"
     },
     "./http-error": {
-      "types": "./src/infra/utils/HttpError.ts",
-      "import": "./src/infra/utils/HttpError.ts",
-      "default": "./src/infra/utils/HttpError.ts"
+      "types": "./dist/http-error.d.ts",
+      "import": "./dist/http-error.js",
+      "require": "./dist/http-error.cjs",
+      "default": "./dist/http-error.js"
     },
     "./package.json": "./package.json"
   },
   "typesVersions": {
     "*": {
       "*": [
-        "./src/*"
+        "./dist/*"
       ],
       "decorators": [
-        "./src/decorators/index.ts"
+        "./dist/decorators.d.ts"
       ],
       "middleware": [
-        "./src/middleware/index.ts"
+        "./dist/middleware.d.ts"
       ],
       "types": [
-        "./src/types/index.ts"
+        "./dist/types.d.ts"
       ],
       "infra": [
-        "./src/infra/index.ts"
+        "./dist/infra.d.ts"
       ],
       "router": [
-        "./src/infra/Router.ts"
+        "./dist/router.d.ts"
       ],
       "config": [
-        "./src/shared/config/index.ts"
+        "./dist/config.d.ts"
       ],
       "plugins": [
-        "./src/shared/plugins/index.ts"
+        "./dist/plugins.d.ts"
       ],
       "cors": [
-        "./src/shared/plugins/CORSPlugin.ts"
+        "./dist/cors.d.ts"
       ],
       "rate-limit": [
-        "./src/shared/plugins/RateLimitPlugin.ts"
+        "./dist/rate-limit.d.ts"
       ],
       "utils": [
-        "./src/utils/index.ts"
+        "./dist/utils.d.ts"
       ],
       "cookies": [
-        "./src/utils/cookies/index.ts"
+        "./dist/cookies.d.ts"
       ],
       "validators": [
-        "./src/utils/validators/index.ts"
+        "./dist/validators.d.ts"
       ],
       "logger": [
-        "./src/utils/Logger.ts"
+        "./dist/logger.d.ts"
       ],
       "http-error": [
-        "./src/infra/utils/HttpError.ts"
+        "./dist/http-error.d.ts"
       ]
     }
   },
   "files": [
+    "dist",
     "src",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "prepublishOnly": "echo '✅ Ready to publish'",
+    "build": "tsup",
+    "build:watch": "tsup --watch",
+    "prepublishOnly": "bun run build",
     "test": "bun test"
   },
   "keywords": [
@@ -174,7 +192,8 @@
     "bun": ">=1.0.0"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "tsup": "^8.5.1"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"

@@ -4,15 +4,18 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "start": "bun run index.ts"
+    "start": "bun run index.ts",
+    "js:basic": "bun run basic-server.js",
+    "js:middleware": "bun run middleware-server.js",
+    "js:crud": "bun run crud-api.js",
+    "js:plugins": "bun run plugins-server.js",
+    "js:cookies": "bun run cookies-server.js",
+    "js:errors": "bun run error-handling.js"
   },
   "devDependencies": {
     "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5"
-  },
-  "dependencies": {
-    "azurajs": "^1.0.4"
   }
 }

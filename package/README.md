@@ -12,6 +12,7 @@
 🚀 **High performance** - Built for speed with minimal overhead  
 📦 **Zero dependencies** - Lightweight and efficient  
 🔧 **TypeScript first** - Full type safety out of the box  
+📜 **JavaScript support** - Works seamlessly with plain JavaScript too  
 🎯 **Parameter injection** - `@Body`, `@Query`, `@Param`, `@Req`, `@Res`, etc.  
 🔌 **Middleware support** - Express-compatible middleware system  
 ⚙️ **Configurable** - File-based configuration (TS, JSON, YAML)  
@@ -142,6 +143,242 @@ await app.listen();
 
 ```bash
 bun run index.ts
+```
+
+## JavaScript Support
+
+AzuraJS works great with plain JavaScript! Here are the same examples in JavaScript:
+
+### JavaScript Quick Start
+
+#### 1. Create `azura.config.js`
+
+```javascript
+const config = {
+  environment: "development",
+  server: {
+    port: 3000,
+    cluster: false,
+    ipHost: true,
+    https: false,
+  },
+  logging: {
+    enabled: true,
+    showDetails: true,
+  },
+  plugins: {
+    cors: {
+      enabled: true,
+      origins: ["*"],
+    },
+    rateLimit: {
+      enabled: false,
+      limit: 100,
+      timeframe: 60000,
+    },
+  },
+};
+
+export default config;
+```
+
+#### 2. Simple Server (Functional Style)
+
+```javascript
+import { AzuraClient } from "azurajs";
+import { createLoggingMiddleware } from "azurajs/middleware";
+
+const app = new AzuraClient();
+const logger = createLoggingMiddleware(app.getConfig());
+app.use(logger);
+
+// Define routes
+app.get("/", (req, res) => {
+  res.json({ message: "Hello from AzuraJS with JavaScript!" });
+});
+
+app.get("/users", (req, res) => {
+  res.json({ 
+    users: [
+      { id: 1, name: "John" },
+      { id: 2, name: "Jane" }
+    ] 
+  });
+});
+
+app.get("/users/:id", (req, res) => {
+  const { id } = req.params;
+  res.json({ id: Number(id), name: `User ${id}` });
+});
+
+app.post("/users", (req, res) => {
+  const body = req.body;
+  res.status(201).json({ 
+    id: Date.now(), 
+    ...body 
+  });
+});
+
+await app.listen();
+```
+
+#### 3. CRUD API in JavaScript
+
+```javascript
+import { AzuraClient } from "azurajs";
+import { createLoggingMiddleware } from "azurajs/middleware";
+
+const app = new AzuraClient();
+const logger = createLoggingMiddleware(app.getConfig());
+app.use(logger);
+
+// In-memory data store
+const users = [];
+
+// List all users
+app.get("/api/users", (req, res) => {
+  res.json(users);
+});
+
+// Get single user
+app.get("/api/users/:id", (req, res) => {
+  const user = users.find(u => u.id === Number(req.params.id));
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+  res.json(user);
+});
+
+// Create user
+app.post("/api/users", (req, res) => {
+  const user = { 
+    id: Date.now(), 
+    ...req.body 
+  };
+  users.push(user);
+  res.status(201).json(user);
+});
+
+// Update user
+app.put("/api/users/:id", (req, res) => {
+  const index = users.findIndex(u => u.id === Number(req.params.id));
+  if (index === -1) {
+    return res.status(404).json({ error: "User not found" });
+  }
+  users[index] = { ...users[index], ...req.body };
+  res.json(users[index]);
+});
+
+// Delete user
+app.delete("/api/users/:id", (req, res) => {
+  const index = users.findIndex(u => u.id === Number(req.params.id));
+  if (index === -1) {
+    return res.status(404).json({ error: "User not found" });
+  }
+  users.splice(index, 1);
+  res.status(204).send();
+});
+
+await app.listen();
+```
+
+#### 4. Middleware Example in JavaScript
+
+```javascript
+import { AzuraClient } from "azurajs";
+
+const app = new AzuraClient();
+
+// Custom authentication middleware
+app.use((req, res, next) => {
+  const token = req.headers["authorization"];
+  
+  if (!token) {
+    return res.status(401).json({ error: "No token provided" });
+  }
+  
+  // Verify token logic here
+  req.user = { id: 1, name: "John" };
+  next();
+});
+
+// Custom logging middleware
+app.use((req, res, next) => {
+  const start = Date.now();
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  
+  next();
+  
+  const duration = Date.now() - start;
+  console.log(`Request completed in ${duration}ms`);
+});
+
+app.get("/protected", (req, res) => {
+  res.json({ message: `Hello ${req.user.name}!` });
+});
+
+await app.listen();
+```
+
+#### 5. Cookie Handling in JavaScript
+
+```javascript
+import { AzuraClient } from "azurajs";
+
+const app = new AzuraClient();
+
+// Set cookie
+app.get("/set-cookie", (req, res) => {
+  res.cookie("user_session", "abc123", {
+    httpOnly: true,
+    maxAge: 3600000, // 1 hour
+    secure: true,
+    sameSite: "strict"
+  });
+  res.json({ message: "Cookie set!" });
+});
+
+// Read cookie
+app.get("/read-cookie", (req, res) => {
+  const session = req.cookies.user_session;
+  res.json({ session });
+});
+
+// Clear cookie
+app.get("/clear-cookie", (req, res) => {
+  res.clearCookie("user_session");
+  res.json({ message: "Cookie cleared!" });
+});
+
+await app.listen();
+```
+
+#### 6. Query Parameters in JavaScript
+
+```javascript
+import { AzuraClient } from "azurajs";
+
+const app = new AzuraClient();
+
+// Handle query parameters
+app.get("/search", (req, res) => {
+  const { q, page = 1, limit = 10 } = req.query;
+  
+  res.json({
+    query: q,
+    page: Number(page),
+    limit: Number(limit),
+    results: []
+  });
+});
+
+// Multiple query params
+app.get("/filter", (req, res) => {
+  const filters = req.query;
+  res.json({ appliedFilters: filters });
+});
+
+await app.listen();
 ```
 
 ## Alternative: Use with Custom Servers
@@ -560,15 +797,15 @@ import type { ConfigTypes } from "azurajs/config";
 import type { RequestHandler } from "azurajs/types";
 ```
 
-> ⚠️ Azura is TypeScript-only.
+> ⚠️ Note about TypeScript
 
 > This package ships uncompiled TypeScript source code.
-> You must use a runtime or build tool that supports TypeScript:
-> - Bun
-> - ts-node
-> - tsx
-> - Deno
-> - Vite
+> You can use it with TypeScript or JavaScript (via transpilation).
+> Recommended runtimes:
+> - **Bun** (supports TypeScript and JavaScript natively)
+> - **Node.js** with tsx, ts-node, or build tools like Vite/Webpack
+> - **Deno** (supports TypeScript natively)
+> - For production JavaScript: Use a bundler like esbuild, swc, or tsc
 
 ## Contributing
 

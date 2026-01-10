@@ -10,6 +10,9 @@ Real-world examples to help you build with AzuraJS.
 
 ## Complete REST API Example 🎯
 
+<Tabs items={['TypeScript', 'JavaScript']}>
+<Tab value="TypeScript">
+
 ```typescript title="src/index.ts"
 import { AzuraClient, applyDecorators } from "azurajs";
 import {
@@ -161,6 +164,134 @@ app.use(logger);
 applyDecorators(app, [PostController]);
 await app.listen();
 ```
+
+</Tab>
+<Tab value="JavaScript">
+
+```javascript title="src/index.js"
+import { AzuraClient } from "azurajs";
+import { HttpError } from "azurajs/http-error";
+import { createLoggingMiddleware } from "azurajs/middleware";
+
+// In-memory database
+const posts = [
+  {
+    id: 1,
+    title: "Hello AzuraJS",
+    content: "Getting started with AzuraJS",
+    author: "Alice",
+    createdAt: new Date(),
+  },
+];
+
+const app = new AzuraClient();
+const logger = createLoggingMiddleware(app.getConfig());
+app.use(logger);
+
+// Get all posts with pagination
+app.get("/api/posts", (req, res) => {
+  const { limit = 10, offset = 0 } = req.query;
+  const limitNum = Number(limit);
+  const offsetNum = Number(offset);
+  
+  const paginatedPosts = posts.slice(offsetNum, offsetNum + limitNum);
+  
+  res.json({
+    posts: paginatedPosts,
+    pagination: {
+      limit: limitNum,
+      offset: offsetNum,
+      total: posts.length,
+    },
+  });
+});
+
+// Get single post
+app.get("/api/posts/:id", (req, res) => {
+  const { id } = req.params;
+  const post = posts.find((p) => p.id === Number(id));
+  
+  if (!post) {
+    throw new HttpError(404, "Post not found");
+  }
+  
+  res.json({ post });
+});
+
+// Create post
+app.post("/api/posts", (req, res) => {
+  const { title, content, author } = req.body;
+  
+  if (!title || !content || !author) {
+    throw new HttpError(400, "Missing required fields");
+  }
+  
+  const post = {
+    id: Date.now(),
+    title,
+    content,
+    author,
+    createdAt: new Date(),
+  };
+  
+  posts.push(post);
+  res.status(201).json({ post });
+});
+
+// Update post
+app.put("/api/posts/:id", (req, res) => {
+  const { id } = req.params;
+  const { title, content, author } = req.body;
+  
+  const post = posts.find((p) => p.id === Number(id));
+  
+  if (!post) {
+    throw new HttpError(404, "Post not found");
+  }
+  
+  if (title) post.title = title;
+  if (content) post.content = content;
+  if (author) post.author = author;
+  
+  res.json({ post });
+});
+
+// Delete post
+app.delete("/api/posts/:id", (req, res) => {
+  const { id } = req.params;
+  const index = posts.findIndex((p) => p.id === Number(id));
+  
+  if (index === -1) {
+    throw new HttpError(404, "Post not found");
+  }
+  
+  posts.splice(index, 1);
+  res.json({ message: "Post deleted successfully" });
+});
+
+// Search posts
+app.get("/api/posts/search", (req, res) => {
+  const { q } = req.query;
+  
+  if (!q) {
+    throw new HttpError(400, "Search query required");
+  }
+  
+  const results = posts.filter(
+    (p) =>
+      p.title.toLowerCase().includes(q.toLowerCase()) ||
+      p.content.toLowerCase().includes(q.toLowerCase())
+  );
+  
+  res.json({ posts: results, query: q });
+});
+
+// Start server
+await app.listen();
+```
+
+</Tab>
+</Tabs>
 
 ## Authentication Example 🔐
 

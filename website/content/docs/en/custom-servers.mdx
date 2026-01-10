@@ -12,6 +12,9 @@ AzuraJS can be used with **any server** that supports the Web Fetch API, just li
 
 Bun provides a fast native HTTP server. Use AzuraJS with `Bun.serve`:
 
+<Tabs items={['TypeScript', 'JavaScript']}>
+<Tab value="TypeScript">
+
 ```typescript title="bun-server.ts"
 import { AzuraClient } from "azurajs";
 
@@ -44,10 +47,48 @@ const server = Bun.serve({
 console.log(`🚀 Server running on http://localhost:${server.port}`);
 ```
 
+</Tab>
+<Tab value="JavaScript">
+
+```javascript title="bun-server.js"
+import { AzuraClient } from "azurajs";
+
+const app = new AzuraClient();
+
+app.get("/", (req, res) => {
+  res.json({ message: "Hello from AzuraJS on Bun!" });
+});
+
+app.get("/user/:id", (req, res) => {
+  res.json({ 
+    userId: req.params.id,
+    runtime: "Bun" 
+  });
+});
+
+app.post("/data", (req, res) => {
+  res.json({ 
+    received: req.body,
+    timestamp: Date.now() 
+  });
+});
+
+// Use with Bun's native server
+const server = Bun.serve({
+  port: process.env.PORT || 3000,
+  fetch: app.fetch.bind(app),
+});
+
+console.log(`🚀 Server running on http://localhost:${server.port}`);
+```
+
+</Tab>
+</Tabs>
+
 Run it:
 
 ```bash
-bun run bun-server.ts
+bun run bun-server.ts  # or .js
 ```
 
 ### Why Use Bun?
@@ -60,6 +101,9 @@ bun run bun-server.ts
 ## Using with Deno 🦕
 
 Deno is a secure runtime for JavaScript and TypeScript. Use AzuraJS with `Deno.serve`:
+
+<Tabs items={['TypeScript', 'JavaScript']}>
+<Tab value="TypeScript">
 
 ```typescript title="deno-server.ts"
 import { AzuraClient } from "azurajs";
@@ -83,10 +127,38 @@ Deno.serve({ port: 3000 }, app.fetch.bind(app));
 console.log("🦕 Server running on http://localhost:3000");
 ```
 
+</Tab>
+<Tab value="JavaScript">
+
+```javascript title="deno-server.js"
+import { AzuraClient } from "azurajs";
+
+const app = new AzuraClient();
+
+app.get("/", (req, res) => {
+  res.json({ message: "Hello from AzuraJS on Deno!" });
+});
+
+app.get("/api/:name", (req, res) => {
+  res.json({ 
+    greeting: `Hello ${req.params.name}!`,
+    runtime: "Deno" 
+  });
+});
+
+// Use with Deno.serve
+Deno.serve({ port: 3000 }, app.fetch.bind(app));
+
+console.log("🦕 Server running on http://localhost:3000");
+```
+
+</Tab>
+</Tabs>
+
 Run it:
 
 ```bash
-deno run --allow-net --allow-read deno-server.ts
+deno run --allow-net --allow-read deno-server.ts  # or .js
 ```
 
 ### Why Use Deno?
@@ -99,6 +171,9 @@ deno run --allow-net --allow-read deno-server.ts
 ## Using with Cloudflare Workers ☁️
 
 Deploy globally on Cloudflare's edge network:
+
+<Tabs items={['TypeScript', 'JavaScript']}>
+<Tab value="TypeScript">
 
 ```typescript title="worker.ts"
 import { AzuraClient } from "azurajs";
@@ -124,6 +199,37 @@ export default {
   fetch: app.fetch.bind(app),
 };
 ```
+
+</Tab>
+<Tab value="JavaScript">
+
+```javascript title="worker.js"
+import { AzuraClient } from "azurajs";
+
+const app = new AzuraClient();
+
+app.get("/", (req, res) => {
+  res.json({ 
+    message: "Hello from the Edge!",
+    location: "Cloudflare Workers" 
+  });
+});
+
+app.get("/api/:id", (req, res) => {
+  res.json({ 
+    id: req.params.id,
+    deployed: "globally" 
+  });
+});
+
+// Export for Cloudflare Workers
+export default {
+  fetch: app.fetch.bind(app),
+};
+```
+
+</Tab>
+</Tabs>
 
 ### Why Use Cloudflare Workers?
 

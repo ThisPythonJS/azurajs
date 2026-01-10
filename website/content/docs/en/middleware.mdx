@@ -21,6 +21,9 @@ Middleware is a function that executes before your route handler. It has access 
 
 ### Basic Middleware
 
+<Tabs items={['TypeScript', 'JavaScript']}>
+<Tab value="TypeScript">
+
 ```typescript
 import type { RequestHandler } from "azurajs/types";
 
@@ -30,7 +33,23 @@ const myMiddleware: RequestHandler = async (req, res, next) => {
 };
 ```
 
+</Tab>
+<Tab value="JavaScript">
+
+```javascript
+const myMiddleware = async (req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  await next();
+};
+```
+
+</Tab>
+</Tabs>
+
 ### Middleware with Configuration
+
+<Tabs items={['TypeScript', 'JavaScript']}>
+<Tab value="TypeScript">
 
 ```typescript
 function createAuthMiddleware(secret: string): RequestHandler {
@@ -48,11 +67,36 @@ function createAuthMiddleware(secret: string): RequestHandler {
 }
 ```
 
+</Tab>
+<Tab value="JavaScript">
+
+```javascript
+function createAuthMiddleware(secret) {
+  return async (req, res, next) => {
+    const token = req.headers.authorization;
+    
+    if (!token) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+    
+    // Verify token logic here
+    await next();
+  };
+}
+```
+
+</Tab>
+</Tabs>
+
 ## Using Middleware 🔧
 
 ### Global Middleware
 
 Apply middleware to all routes:
+
+<Tabs items={['TypeScript', 'JavaScript']}>
+<Tab value="TypeScript">
 
 ```typescript
 import { AzuraClient } from "azurajs";
@@ -71,9 +115,35 @@ app.use(async (req, res, next) => {
 });
 ```
 
+</Tab>
+<Tab value="JavaScript">
+
+```javascript
+import { AzuraClient } from "azurajs";
+
+const app = new AzuraClient();
+
+// Add global middleware
+app.use(async (req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  await next();
+});
+
+app.use(async (req, res, next) => {
+  res.setHeader("X-Powered-By", "AzuraJS");
+  await next();
+});
+```
+
+</Tab>
+</Tabs>
+
 ### Built-in Logging Middleware
 
 AzuraJS includes a logging middleware:
+
+<Tabs items={['TypeScript', 'JavaScript']}>
+<Tab value="TypeScript">
 
 ```typescript
 import { AzuraClient } from "azurajs";
@@ -84,9 +154,27 @@ const logger = createLoggingMiddleware(app.getConfig());
 app.use(logger);
 ```
 
+</Tab>
+<Tab value="JavaScript">
+
+```javascript
+import { AzuraClient } from "azurajs";
+import { createLoggingMiddleware } from "azurajs/middleware";
+
+const app = new AzuraClient();
+const logger = createLoggingMiddleware(app.getConfig());
+app.use(logger);
+```
+
+</Tab>
+</Tabs>
+
 ## Middleware Examples 🎨
 
 ### Authentication Middleware
+
+<Tabs items={['TypeScript', 'JavaScript']}>
+<Tab value="TypeScript">
 
 ```typescript
 import { HttpError } from "azurajs/http-error";
@@ -111,7 +199,36 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
 };
 ```
 
+</Tab>
+<Tab value="JavaScript">
+
+```javascript
+export const authMiddleware = async (req, res, next) => {
+  const token = req.headers.authorization?.replace("Bearer ", "");
+  
+  if (!token) {
+    res.status(401).json({ error: "No token provided" });
+    return;
+  }
+  
+  try {
+    // Verify token (example with JWT)
+    const user = await verifyToken(token);
+    req.user = user;  // Attach user to request
+    await next();
+  } catch (error) {
+    res.status(401).json({ error: "Invalid token" });
+  }
+};
+```
+
+</Tab>
+</Tabs>
+
 ### CORS Middleware
+
+<Tabs items={['TypeScript', 'JavaScript']}>
+<Tab value="TypeScript">
 
 ```typescript
 export const corsMiddleware: RequestHandler = async (req, res, next) => {
@@ -128,7 +245,31 @@ export const corsMiddleware: RequestHandler = async (req, res, next) => {
 };
 ```
 
+</Tab>
+<Tab value="JavaScript">
+
+```javascript
+export const corsMiddleware = async (req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  
+  if (req.method === "OPTIONS") {
+    res.status(204).end();
+    return;
+  }
+  
+  await next();
+};
+```
+
+</Tab>
+</Tabs>
+
 ### Rate Limiting Middleware
+
+<Tabs items={['TypeScript', 'JavaScript']}>
+<Tab value="TypeScript">
 
 ```typescript
 const requests = new Map<string, number[]>();
@@ -148,6 +289,39 @@ export function rateLimitMiddleware(limit: number, windowMs: number): RequestHan
     
     recentRequests.push(now);
     requests.set(ip, recentRequests);
+    await next();
+  };
+}
+```
+
+</Tab>
+<Tab value="JavaScript">
+
+```javascript
+const requests = new Map();
+
+export function rateLimitMiddleware(limit, windowMs) {
+  return async (req, res, next) => {
+    const ip = req.socket.remoteAddress || "unknown";
+    const now = Date.now();
+    
+    const userRequests = requests.get(ip) || [];
+    const recentRequests = userRequests.filter(time => now - time < windowMs);
+    
+    if (recentRequests.length >= limit) {
+      res.status(429).json({ error: "Too many requests" });
+      return;
+    }
+    
+    recentRequests.push(now);
+    requests.set(ip, recentRequests);
+    await next();
+  };
+}
+```
+
+</Tab>
+</Tabs>
     
     await next();
   };
