@@ -79,7 +79,7 @@ const config = {
   },
 };
 
-export default config;
+module.exports = config;
 ```
 
 ## Step 2: Create Your Server 🎯
@@ -191,8 +191,8 @@ export class UserController {
 Create server with functional routing in `src/index.js`:
 
 ```javascript title="src/index.js"
-import { AzuraClient } from "azurajs";
-import { createLoggingMiddleware } from "azurajs/middleware";
+const { AzuraClient } = require("azurajs");
+const { createLoggingMiddleware } = require("azurajs/middleware");
 
 // In-memory database (for demo purposes)
 const users = [

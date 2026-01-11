@@ -12,6 +12,8 @@ AzuraJS fornece utilitários para trabalhar com cookies HTTP de forma fácil e t
 
 Use `parseCookiesHeader` para parsear o cabeçalho Cookie:
 
+### TypeScript
+
 ```typescript
 import { Get, Headers } from "azurajs/decorators";
 import { parseCookiesHeader } from "azurajs/cookies";
@@ -27,9 +29,27 @@ getProfile(@Headers("cookie") cookieHeader: string) {
 }
 ```
 
+### JavaScript
+
+```javascript
+const { parseCookiesHeader } = require("azurajs/cookies");
+
+app.get("/profile", (req, res) => {
+  const cookieHeader = req.headers["cookie"];
+  const cookies = parseCookiesHeader(cookieHeader);
+  
+  const sessionId = cookies.sessionId;
+  const theme = cookies.theme;
+  
+  res.json({ sessionId, theme });
+});
+```
+
 ## Definir Cookies ✍️
 
 Use `serializeCookie` para criar cabeçalhos Set-Cookie:
+
+### TypeScript
 
 ```typescript
 import { Post, Body, Res } from "azurajs/decorators";
@@ -52,6 +72,28 @@ login(@Body() credentials: any, @Res() res: ResponseServer) {
   res.setHeader("Set-Cookie", cookie);
   res.json({ user });
 }
+```
+
+### JavaScript
+
+```javascript
+const { serializeCookie } = require("azurajs/cookies");
+
+app.post("/login", (req, res) => {
+  // Autenticar usuário
+  const user = authenticate(req.body);
+  
+  // Definir cookie de sessão
+  const cookie = serializeCookie("sessionId", user.sessionId, {
+    httpOnly: true,
+    secure: true,
+    maxAge: 3600,  // 1 hora
+    path: "/"
+  });
+  
+  res.setHeader("Set-Cookie", cookie);
+  res.json({ user });
+});
 ```
 
 ## Opções de Cookie ⚙️

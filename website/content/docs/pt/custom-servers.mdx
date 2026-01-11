@@ -12,8 +12,44 @@ AzuraJS pode ser usado com **qualquer servidor** que suporte a Web Fetch API, as
 
 Bun fornece um servidor HTTP nativo super rápido. Use AzuraJS com `Bun.serve`:
 
+### TypeScript
+
 ```typescript title="bun-server.ts"
 import { AzuraClient } from "azurajs";
+
+const app = new AzuraClient();
+
+app.get("/", (req, res) => {
+  res.json({ message: "Olá do AzuraJS no Bun!" });
+});
+
+app.get("/user/:id", (req, res) => {
+  res.json({ 
+    userId: req.params.id,
+    runtime: "Bun" 
+  });
+});
+
+app.post("/data", (req, res) => {
+  res.json({ 
+    received: req.body,
+    timestamp: Date.now() 
+  });
+});
+
+// Use com o servidor nativo do Bun
+const server = Bun.serve({
+  port: process.env.PORT || 3000,
+  fetch: app.fetch.bind(app),
+});
+
+console.log(`🚀 Servidor rodando em http://localhost:${server.port}`);
+```
+
+### JavaScript
+
+```javascript title="bun-server.js"
+const { AzuraClient } = require("azurajs");
 
 const app = new AzuraClient();
 
@@ -61,8 +97,34 @@ bun run bun-server.ts
 
 Deno é um runtime seguro para JavaScript e TypeScript. Use AzuraJS com `Deno.serve`:
 
+### TypeScript
+
 ```typescript title="deno-server.ts"
 import { AzuraClient } from "azurajs";
+
+const app = new AzuraClient();
+
+app.get("/", (req, res) => {
+  res.json({ message: "Olá do AzuraJS no Deno!" });
+});
+
+app.get("/api/:name", (req, res) => {
+  res.json({ 
+    greeting: `Olá ${req.params.name}!`,
+    runtime: "Deno" 
+  });
+});
+
+// Use com Deno.serve
+Deno.serve({ port: 3000 }, app.fetch.bind(app));
+
+console.log("🦕 Servidor rodando em http://localhost:3000");
+```
+
+### JavaScript
+
+```javascript title="deno-server.js"
+const { AzuraClient } = require("azurajs");
 
 const app = new AzuraClient();
 
@@ -100,6 +162,8 @@ deno run --allow-net --allow-read deno-server.ts
 
 Deploy globalmente na rede edge da Cloudflare:
 
+### TypeScript
+
 ```typescript title="worker.ts"
 import { AzuraClient } from "azurajs";
 
@@ -125,6 +189,33 @@ export default {
 };
 ```
 
+### JavaScript
+
+```javascript title="worker.js"
+const { AzuraClient } = require("azurajs");
+
+const app = new AzuraClient();
+
+app.get("/", (req, res) => {
+  res.json({ 
+    message: "Olá da Edge!",
+    location: "Cloudflare Workers" 
+  });
+});
+
+app.get("/api/:id", (req, res) => {
+  res.json({ 
+    id: req.params.id,
+    deployed: "globalmente" 
+  });
+});
+
+// Export para Cloudflare Workers
+module.exports = {
+  fetch: app.fetch.bind(app),
+};
+```
+
 ### Por que usar Cloudflare Workers?
 
 - 🌍 **Deploy global** - 200+ localizações edge
@@ -135,6 +226,8 @@ export default {
 ## Usando com Node.js (Padrão) 🟢
 
 AzuraJS inclui um servidor HTTP Node.js integrado:
+
+### TypeScript
 
 ```typescript title="node-server.ts"
 import { AzuraClient, applyDecorators } from "azurajs";
@@ -152,6 +245,26 @@ applyDecorators(app, [UserController]);
 
 // Servidor HTTP Node.js integrado
 await app.listen(3000);
+```
+
+### JavaScript
+
+```javascript title="node-server.js"
+const { AzuraClient, applyDecorators } = require("azurajs");
+const { UserController } = require("./controllers/UserController");
+
+const app = new AzuraClient();
+
+// Rota simples
+app.get("/", (req, res) => {
+  res.json({ message: "Olá do Node.js!" });
+});
+
+// Ou use controllers
+applyDecorators(app, [UserController]);
+
+// Servidor HTTP Node.js integrado
+app.listen(3000);
 ```
 
 Execute:

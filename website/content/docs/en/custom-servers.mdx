@@ -49,7 +49,7 @@ console.log(`🚀 Server running on http://localhost:${server.port}`);
 ### JavaScript
 
 ```javascript title="bun-server.js"
-import { AzuraClient } from "azurajs";
+const { AzuraClient } = require("azurajs");
 
 const app = new AzuraClient();
 
@@ -124,7 +124,7 @@ console.log("🦕 Server running on http://localhost:3000");
 ### JavaScript
 
 ```javascript title="deno-server.js"
-import { AzuraClient } from "azurajs";
+const { AzuraClient } = require("azurajs");
 
 const app = new AzuraClient();
 
@@ -192,7 +192,7 @@ export default {
 ### JavaScript
 
 ```javascript title="worker.js"
-import { AzuraClient } from "azurajs";
+const { AzuraClient } = require("azurajs");
 
 const app = new AzuraClient();
 
@@ -211,7 +211,7 @@ app.get("/api/:id", (req, res) => {
 });
 
 // Export for Cloudflare Workers
-export default {
+module.exports = {
   fetch: app.fetch.bind(app),
 };
 ```

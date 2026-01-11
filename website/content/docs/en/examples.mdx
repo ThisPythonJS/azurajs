@@ -167,9 +167,9 @@ await app.listen();
 ### JavaScript
 
 ```javascript title="src/index.js"
-import { AzuraClient } from "azurajs";
-import { HttpError } from "azurajs/http-error";
-import { createLoggingMiddleware } from "azurajs/middleware";
+const { AzuraClient } = require("azurajs");
+const { HttpError } = require("azurajs/http-error");
+const { createLoggingMiddleware } = require("azurajs/middleware");
 
 // In-memory database
 const posts = [

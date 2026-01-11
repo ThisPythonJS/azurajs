@@ -27,8 +27,34 @@ type RequestHandler = (
 
 Registre middleware que executa para todas as rotas:
 
+### TypeScript
+
 ```typescript
 import { AzuraClient } from "azurajs";
+
+const app = new AzuraClient();
+
+// Middleware de logging
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
+
+// Middleware de autenticação
+app.use((req, res, next) => {
+  const token = req.headers["authorization"];
+  if (!token) {
+    return res.status(401).json({ error: "Não autorizado" });
+  }
+  // Verificar token
+  next();
+});
+```
+
+### JavaScript
+
+```javascript
+const { AzuraClient } = require("azurajs");
 
 const app = new AzuraClient();
 
@@ -55,9 +81,21 @@ app.use((req, res, next) => {
 
 Registra detalhes das requisições:
 
+### TypeScript
+
 ```typescript
 import { AzuraClient } from "azurajs";
 import { LoggingMiddleware } from "azurajs/middleware";
+
+const app = new AzuraClient();
+app.use(LoggingMiddleware);
+```
+
+### JavaScript
+
+```javascript
+const { AzuraClient } = require("azurajs");
+const { LoggingMiddleware } = require("azurajs/middleware");
 
 const app = new AzuraClient();
 app.use(LoggingMiddleware);

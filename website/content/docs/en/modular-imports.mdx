@@ -138,13 +138,13 @@ await app.listen(3000);
 
 ```javascript
 // Main imports
-import { AzuraClient } from "azurajs";
+const { AzuraClient } = require("azurajs");
 
 // Middleware
-import { createLoggingMiddleware } from "azurajs/middleware";
+const { createLoggingMiddleware } = require("azurajs/middleware");
 
 // Utilities
-import { HttpError } from "azurajs/http-error";
+const { HttpError } = require("azurajs/http-error");
 
 const app = new AzuraClient();
 app.use(createLoggingMiddleware(app.getConfig()));
@@ -166,7 +166,7 @@ app.post("/users", (req, res) => {
   res.status(201).json({ id: Date.now(), ...req.body });
 });
 
-await app.listen(3000);
+app.listen(3000);
 ```
 
 ## Benefits

@@ -107,7 +107,7 @@ app.use(async (req, res, next) => {
 #### JavaScript
 
 ```javascript
-import { AzuraClient } from "azurajs";
+const { AzuraClient } = require("azurajs");
 
 const app = new AzuraClient();
 
@@ -141,8 +141,8 @@ app.use(logger);
 #### JavaScript
 
 ```javascript
-import { AzuraClient } from "azurajs";
-import { createLoggingMiddleware } from "azurajs/middleware";
+const { AzuraClient } = require("azurajs");
+const { createLoggingMiddleware } = require("azurajs/middleware");
 
 const app = new AzuraClient();
 const logger = createLoggingMiddleware(app.getConfig());
@@ -181,7 +181,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
 #### JavaScript
 
 ```javascript
-export const authMiddleware = async (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
   const token = req.headers.authorization?.replace("Bearer ", "");
   
   if (!token) {
@@ -198,6 +198,8 @@ export const authMiddleware = async (req, res, next) => {
     res.status(401).json({ error: "Invalid token" });
   }
 };
+
+module.exports = { authMiddleware };
 ```
 
 ### CORS Middleware
@@ -222,7 +224,7 @@ export const corsMiddleware: RequestHandler = async (req, res, next) => {
 #### JavaScript
 
 ```javascript
-export const corsMiddleware = async (req, res, next) => {
+const corsMiddleware = async (req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -234,6 +236,8 @@ export const corsMiddleware = async (req, res, next) => {
   
   await next();
 };
+
+module.exports = { corsMiddleware };
 ```
 
 ### Rate Limiting Middleware
@@ -268,7 +272,7 @@ export function rateLimitMiddleware(limit: number, windowMs: number): RequestHan
 ```javascript
 const requests = new Map();
 
-export function rateLimitMiddleware(limit, windowMs) {
+function rateLimitMiddleware(limit, windowMs) {
   return async (req, res, next) => {
     const ip = req.socket.remoteAddress || "unknown";
     const now = Date.now();
@@ -286,6 +290,8 @@ export function rateLimitMiddleware(limit, windowMs) {
     await next();
   };
 }
+
+module.exports = { rateLimitMiddleware };
 ```
     
     await next();

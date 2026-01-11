@@ -12,25 +12,53 @@ O AzuraJS suporta importações modulares para melhor tree-shaking e bundles men
 
 Importe tudo do pacote principal:
 
+### TypeScript
+
 ```typescript
 import { AzuraClient, applyDecorators } from "azurajs";
+```
+
+### JavaScript
+
+```javascript
+const { AzuraClient, applyDecorators } = require("azurajs");
 ```
 
 ## Decoradores
 
 Importe decoradores separadamente:
 
+### TypeScript
+
 ```typescript
 import { Controller, Get, Post, Put, Delete, Patch } from "azurajs/decorators";
 import { Body, Param, Query, Headers, Req, Res } from "azurajs/decorators";
+```
+
+### JavaScript
+
+```javascript
+// Não aplicável - Decoradores são uma feature do TypeScript
+// Use a API funcional ao invés:
+const { AzuraClient } = require("azurajs");
+const app = new AzuraClient();
+app.get("/", (req, res) => { /* ... */ });
 ```
 
 ## Middleware
 
 Importe utilitários de middleware:
 
+### TypeScript
+
 ```typescript
 import { createLoggingMiddleware } from "azurajs/middleware";
+```
+
+### JavaScript
+
+```javascript
+const { createLoggingMiddleware } = require("azurajs/middleware");
 ```
 
 ## Tipos
@@ -59,6 +87,8 @@ import { rateLimit } from "azurajs/rate-limit";
 
 Importe utilitários conforme necessário:
 
+### TypeScript
+
 ```typescript
 // Logger
 import { logger } from "azurajs/logger";
@@ -71,6 +101,22 @@ import { validateDto, validateSchema } from "azurajs/validators";
 
 // Cookies
 import { parseCookiesHeader, serializeCookie } from "azurajs/cookies";
+```
+
+### JavaScript
+
+```javascript
+// Logger
+const { logger } = require("azurajs/logger");
+
+// HTTP Error
+const { HttpError } = require("azurajs/http-error");
+
+// Validadores
+const { validateDto, validateSchema } = require("azurajs/validators");
+
+// Cookies
+const { parseCookiesHeader, serializeCookie } = require("azurajs/cookies");
 ```
 
 ## Router

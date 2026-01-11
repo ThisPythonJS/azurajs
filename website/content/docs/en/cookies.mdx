@@ -31,7 +31,7 @@ getProfile(@Req() req: RequestServer, @Res() res: ResponseServer) {
 ### JavaScript
 
 ```javascript
-import { parseCookiesHeader } from "azurajs/cookies";
+const { parseCookiesHeader } = require("azurajs/cookies");
 
 app.get("/profile", (req, res) => {
   const cookies = parseCookiesHeader(req.headers.cookie || "");
@@ -72,7 +72,7 @@ login(@Body() credentials: any, @Res() res: ResponseServer) {
 ### JavaScript
 
 ```javascript
-import { serializeCookie } from "azurajs/cookies";
+const { serializeCookie } = require("azurajs/cookies");
 
 app.post("/login", (req, res) => {
   // Authenticate user...
@@ -162,6 +162,8 @@ serializeCookie("token", "value", {
 
 ## Complete Cookie Example 🎯
 
+### TypeScript
+
 ```typescript
 import { Controller, Post, Body, Res } from "azurajs/decorators";
 import { parseCookiesHeader, serializeCookie } from "azurajs/cookies";
@@ -229,9 +231,73 @@ export class AuthController {
 }
 ```
 
+### JavaScript
+
+```javascript
+const { parseCookiesHeader, serializeCookie } = require("azurajs/cookies");
+
+// Login and set session cookie
+app.post("/api/auth/login", (req, res) => {
+  const credentials = req.body;
+  
+  // Validate credentials
+  if (!isValidCredentials(credentials)) {
+    return res.status(401).json({ error: "Invalid credentials" });
+  }
+  
+  // Create session
+  const sessionId = createSession(credentials.username);
+  
+  const options = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 24 * 60 * 60, // 24 hours
+    path: "/",
+    sameSite: "Strict",
+  };
+  
+  const cookie = serializeCookie("sessionId", sessionId, options);
+  res.setHeader("Set-Cookie", cookie);
+  
+  res.json({ success: true });
+});
+
+// Get user from session cookie
+app.get("/api/auth/me", (req, res) => {
+  const cookies = parseCookiesHeader(req.headers.cookie || "");
+  const sessionId = cookies.sessionId;
+  
+  if (!sessionId) {
+    return res.status(401).json({ error: "Not authenticated" });
+  }
+  
+  const user = getUserFromSession(sessionId);
+  if (!user) {
+    return res.status(401).json({ error: "Invalid session" });
+  }
+  
+  res.json({ user });
+});
+
+// Logout and clear cookie
+app.post("/api/auth/logout", (req, res) => {
+  // Clear cookie by setting maxAge to 0
+  const cookie = serializeCookie("sessionId", "", {
+    httpOnly: true,
+    maxAge: 0,
+    path: "/",
+  });
+  
+  res.setHeader("Set-Cookie", cookie);
+  res.json({ success: true });
+});
+```
+
 ## Cookie Middleware 🔌
 
 Create middleware for cookie authentication:
+
+### TypeScript
 
 ```typescript
 import { parseCookiesHeader } from "azurajs/cookies";
@@ -254,6 +320,35 @@ export const cookieAuthMiddleware: RequestHandler = async (req, res, next) => {
   
   // Attach user to request
   (req as any).user = user;
+  await next();
+};
+
+// Usage
+app.use(cookieAuthMiddleware);
+```
+
+### JavaScript
+
+```javascript
+const { parseCookiesHeader } = require("azurajs/cookies");
+
+const cookieAuthMiddleware = async (req, res, next) => {
+  const cookies = parseCookiesHeader(req.headers.cookie || "");
+  const sessionId = cookies.sessionId;
+  
+  if (!sessionId) {
+    res.status(401).json({ error: "Not authenticated" });
+    return;
+  }
+  
+  const user = await getUserFromSession(sessionId);
+  if (!user) {
+    res.status(401).json({ error: "Invalid session" });
+    return;
+  }
+  
+  // Attach user to request
+  req.user = user;
   await next();
 };
 

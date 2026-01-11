@@ -34,7 +34,7 @@ getUser(@Param("id") id: string, @Res() res: ResponseServer) {
 ### JavaScript
 
 ```javascript
-import { HttpError } from "azurajs/http-error";
+const { HttpError } = require("azurajs/http-error");
 
 app.get("/:id", (req, res) => {
   const { id } = req.params;
@@ -174,9 +174,9 @@ app.use(errorHandler);
 ### JavaScript
 
 ```javascript
-import { HttpError } from "azurajs/http-error";
+const { HttpError } = require("azurajs/http-error");
 
-export const errorHandler = async (req, res, next) => {
+const errorHandler = async (req, res, next) => {
   try {
     await next();
   } catch (error) {
@@ -206,6 +206,7 @@ export const errorHandler = async (req, res, next) => {
 };
 
 // Apply globally
+const { AzuraClient } = require("azurajs");
 const app = new AzuraClient();
 app.use(errorHandler);
 ```

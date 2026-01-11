@@ -41,11 +41,24 @@ const config = {
 export default config;
 ```
 
+Ou com **CommonJS**:
+
+```javascript title="azura.config.js"
+const config = {
+  environment: "development",
+  server: {
+    port: 3000,
+  },
+};
+
+module.exports = config;
+```
+
 ### 3. Criar Seu Servidor
 
 ```javascript title="index.js"
-import { AzuraClient } from "azurajs";
-import { createLoggingMiddleware } from "azurajs/middleware";
+const { AzuraClient } = require("azurajs");
+const { createLoggingMiddleware } = require("azurajs/middleware");
 
 const app = new AzuraClient();
 const logger = createLoggingMiddleware(app.getConfig());
@@ -55,7 +68,7 @@ app.get("/", (req, res) => {
   res.json({ message: "Olá do JavaScript!" });
 });
 
-await app.listen();
+app.listen();
 ```
 
 ### 4. Executar
@@ -71,7 +84,7 @@ node index.js
 ### Definindo Rotas
 
 ```javascript
-import { AzuraClient } from "azurajs";
+const { AzuraClient } = require("azurajs");
 
 const app = new AzuraClient();
 
