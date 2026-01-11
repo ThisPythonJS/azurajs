@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Zap,
@@ -17,6 +17,7 @@ import {
   Copy,
   Check,
   Star,
+  Quote,
 } from "lucide-react";
 import { GetStartedButton } from "./get-started-button";
 
@@ -169,6 +170,12 @@ export default function HomePage() {
           </div>
         </div>
 
+        {/* Testimonials Section */}
+        <TestimonialsSection />
+
+        {/* Partners Section */}
+        <PartnersSection />
+
         {/* Footer */}
         <footer className="max-w-6xl mx-auto mt-32 pt-8 border-t border-white/5 pb-8 flex flex-col md:flex-row justify-between items-center gap-4 text-neutral-500 text-sm">
           <div>© {new Date().getFullYear()} AzuraJS Framework.</div>
@@ -247,6 +254,138 @@ function FeatureCard({
       </div>
       <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
       <p className="text-sm text-neutral-400 leading-relaxed">{desc}</p>
+    </div>
+  );
+}
+
+interface Testimonial {
+  user: string;
+  name?: string;
+  role?: string;
+  description: string;
+  avatar?: string;
+}
+
+function TestimonialsSection() {
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('https://raw.githubusercontent.com/0xviny/azurajs/main/depoiments/depoiments.json')
+      .then(res => res.json())
+      .then(data => {
+        setTestimonials(data.depoiments || []);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Failed to load testimonials:', error);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="max-w-6xl mx-auto mt-32">
+        <div className="mb-12 text-center">
+          <h2 className="text-3xl font-bold text-white mb-4">What Developers Say</h2>
+          <p className="text-neutral-400">Loading testimonials...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (testimonials.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="max-w-6xl mx-auto mt-32">
+      <div className="mb-12 text-center">
+        <h2 className="text-3xl font-bold text-white mb-4">What Developers Say</h2>
+        <p className="text-neutral-400 max-w-xl mx-auto">
+          See what developers are saying about their experience with AzuraJS.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {testimonials.map((testimonial, index) => (
+          <div
+            key={index}
+            className="group p-6 rounded-xl bg-neutral-900/50 border border-white/5 hover:border-white/10 hover:bg-neutral-900 transition-all duration-300"
+          >
+            <div className="flex items-start gap-4 mb-4">
+              {testimonial.avatar && (
+                <img
+                  src={testimonial.avatar}
+                  alt={testimonial.name || testimonial.user}
+                  className="w-12 h-12 rounded-full border-2 border-white/10"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              )}
+              <div className="flex-1">
+                <h3 className="text-white font-semibold">
+                  {testimonial.name || testimonial.user}
+                </h3>
+                {testimonial.role && (
+                  <p className="text-xs text-neutral-500">{testimonial.role}</p>
+                )}
+              </div>
+              <Quote size={20} className="text-blue-400/40" />
+            </div>
+            <p className="text-sm text-neutral-300 leading-relaxed italic">
+              "{testimonial.description}"
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+interface Partner {
+  name: string;
+  logo: string;
+  url: string;
+}
+
+function PartnersSection() {
+  const partners: Partner[] = [
+    {
+      name: "Cheetah Solutions",
+      logo: "/partners/cheetah.png",
+      url: "https://www.cheetahsolutions.com.br/"
+    }
+  ];
+
+  return (
+    <div className="max-w-6xl mx-auto mt-32">
+      <div className="mb-12 text-center">
+        <h2 className="text-3xl font-bold text-white mb-4">Our Partners</h2>
+        <p className="text-neutral-400 max-w-xl mx-auto">
+          Proudly supported by companies that believe in modern backend development.
+        </p>
+      </div>
+
+      <div className="flex flex-wrap items-center justify-center gap-8">
+        {partners.map((partner, index) => (
+          <a
+            key={index}
+            href={partner.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative p-8 rounded-xl bg-neutral-900/50 border border-white/5 hover:border-white/10 hover:bg-neutral-900 transition-all duration-300 hover:scale-105"
+            title={partner.name}
+          >
+            <img
+              src={partner.logo}
+              alt={partner.name}
+              className="h-12 w-auto grayscale group-hover:grayscale-0 transition-all duration-300 opacity-70 group-hover:opacity-100"
+            />
+          </a>
+        ))}
+      </div>
     </div>
   );
 }
