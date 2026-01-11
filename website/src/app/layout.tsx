@@ -78,6 +78,9 @@ export const metadata: Metadata = {
 export default function Layout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/logo.png" type="image/png" />
+      </head>
       <body className="flex flex-col min-h-screen">
         <RootProvider>
           {children}
