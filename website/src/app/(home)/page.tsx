@@ -92,9 +92,12 @@ export default function HomePage() {
             <div className="p-6 md:p-8 overflow-x-auto bg-[#0A0A0A]">
               <pre className="font-mono text-sm leading-7 text-blue-100/90">
                 <code>
-                  <span className="text-purple-400">import</span> {"{"} Azura, Controller, Get {"}"}{" "}
+                  <span className="text-purple-400">import</span> {"{"} AzuraClient {"}"}{" "}
                   <span className="text-purple-400">from</span>{" "}
-                  <span className="text-green-400">'azurajs'</span>;<br />
+                  <span className="text-green-400">'azurajs'</span>;<br />{" "}
+                  <span className="text-purple-400">import</span> {"{"} Controller, Get {"}"}{" "}
+                  <span className="text-purple-400">from</span>{" "}
+                  <span className="text-green-400">'azurajs/decorators'</span>;<br />
                   <br />
                   <span className="text-yellow-300">@Controller</span>(
                   <span className="text-green-400">'/api'</span>)<br />
@@ -117,10 +120,10 @@ export default function HomePage() {
                   <br />
                   <span className="text-purple-400">const</span> app ={" "}
                   <span className="text-purple-400">new</span>{" "}
-                  <span className="text-blue-300">Azura</span>();
+                  <span className="text-blue-300">AzuraClient</span>();
                   <br />
                   app.<span className="text-blue-300">listen</span>(
-                  <span className="text-orange-300">3000</span>);
+                  <span className="text-orange-300"></span>);
                 </code>
               </pre>
             </div>
