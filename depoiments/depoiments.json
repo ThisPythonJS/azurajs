@@ -13,6 +13,12 @@
       "role": "Partner and Supporter",
       "description": "O AzuraJS foi fundamental para resolver os problemas que eu enfrentava ao usar Express. Eu acho incrivel o que o Viny faz pelo projeto e pela comunidade. Sem o AzuraJS eu não poderia ter uma API segura e Rápida.",
       "avatar": "https://github.com/ThisPythonJS.png"
+    },
+    {
+      "user": "ttmatheus",
+      "name": "Matheus",
+      "description": "AzuraJS facilitou e muito os problemas que eu tinha criando minhas aplicações, a praticidade e desempenho que a ferramenta trouxe foi, sem dúvidas, um divisor de águas no meu fluxo de desenvolvimento."
+      "avatar": "https://github.com/ttmatheus.png"
     }
   ]
 }
