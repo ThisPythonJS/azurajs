@@ -18,6 +18,8 @@ const app = new AzuraClient();
 // ============================================
 
 app.get("/set-cookie", (req, res) => {
+  console.log(req, res);
+
   res.cookie("username", "john_doe", {
     maxAge: 3600, // 1 hour
     httpOnly: true,
@@ -151,7 +153,7 @@ app.use(async (req, res, next) => {
     (req as any).sessionId = session.id;
   }
 
-  next();
+  if (next) next();
 });
 
 app.post("/session/login", async (req, res) => {
@@ -236,7 +238,7 @@ app.use((req, res, next) => {
     return this;
   };
 
-  next();
+  if (next) next();
 });
 
 app.post("/action", (req, res) => {
@@ -268,7 +270,7 @@ app.use((req, res, next) => {
     res.cookie("csrf_token", token, CookiePresets.csrf(true));
   }
 
-  next();
+  if (next) next();
 });
 
 app.post("/protected-action", (req, res) => {
@@ -379,4 +381,4 @@ function generateToken(): string {
   return Math.random().toString(36).substring(7);
 }
 
-export { app };
+app.listen();
