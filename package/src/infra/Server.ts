@@ -377,6 +377,7 @@ export class AzuraClient {
         if (err) return errorHandler(err);
         if (idx >= chain.length) return;
         const fn = chain[idx++];
+        if (!fn) return;
         try {
           await fn({
             request: rawReq as RequestServer,
@@ -567,6 +568,7 @@ export class AzuraClient {
             }
             if (idx >= chain.length) return;
             const fn = chain[idx++];
+            if (!fn) return;
             try {
               await fn({
                 request: rawReq,
@@ -606,6 +608,7 @@ export class AzuraClient {
         if (err) return errorHandler(err);
         if (idx >= chain.length) return;
         const fn = chain[idx++];
+        if (!fn) return;
         try {
           await fn({
             request: rawReq,
