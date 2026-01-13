@@ -88,6 +88,7 @@ Create `azura.config.ts` in your project root:
 import type { ConfigTypes } from "azurajs";
 
 const config: ConfigTypes = {
+  name: "API built with AzuraJS",
   environment: "development",
   server: {
     port: 3000,
@@ -115,17 +116,19 @@ export default config;
 Create `src/controllers/HelloController.ts`:
 
 ```typescript
-import { Controller, Get, Res } from "azurajs";
+import { Controller, Get, Param, Res, Description } from "azurajs";
 import type { ResponseServer } from "azurajs";
 
 @Controller("/api")
 export class HelloController {
   @Get("/hello")
+  @Description("Returns a simple greeting message")
   sayHello(@Res() res: ResponseServer) {
     res.json({ message: "Hello, AzuraJS!" });
   }
 
   @Get("/hello/:name")
+  @Description("Returns a personalized greeting for the specified name")
   sayHelloToName(@Param("name") name: string, @Res() res: ResponseServer) {
     res.json({ message: `Hello, ${name}!` });
   }
@@ -207,11 +210,68 @@ export class UserController {
 Use HTTP method decorators to define routes:
 
 ```typescript
-@Get("/")         // GET /api/users
-@Post("/")        // POST /api/users
-@Put("/:id")      // PUT /api/users/:id
-@Delete("/:id")   // DELETE /api/users/:id
-@Patch("/:id")    // PATCH /api/users/:id
+@Get("/")
+@Description("List all users")
+getUsers() { }
+
+@Post("/")
+@Description("Create a new user")
+createUser() { }
+
+@Put("/:id")
+@Description("Update an existing user by ID")
+updateUser() { }
+
+@Delete("/:id")
+@Description("Delete a user by ID")
+deleteUser() { }
+
+@Patch("/:id")
+@Description("Partially update a user by ID")
+patchUser() { }
+```
+
+### Documentation with @Description
+
+The `@Description` decorator is optional and helps document your API routes. It's especially useful for auto-generated documentation:
+
+```typescript
+@Controller("/api/products")
+export class ProductController {
+  @Get("/")
+  @Description("Retrieve a paginated list of all products")
+  getAllProducts(@Query("page") page: string, @Res() res: ResponseServer) {
+    // ...
+  }
+
+  @Get("/:id")
+  @Description("Get detailed information about a specific product")
+  getProductById(@Param("id") id: string, @Res() res: ResponseServer) {
+    // ...
+  }
+
+  @Post("/")
+  @Description("Create a new product with the provided data")
+  createProduct(@Body() productData: any, @Res() res: ResponseServer) {
+    // ...
+  }
+
+  @Put("/:id")
+  @Description("Replace all data for an existing product")
+  updateProduct(
+    @Param("id") id: string,
+    @Body() productData: any,
+    @Res() res: ResponseServer
+  ) {
+    // ...
+  }
+
+  @Delete("/:id")
+  @Description("Permanently delete a product from the database")
+  deleteProduct(@Param("id") id: string, @Res() res: ResponseServer) {
+    // ...
+  }
+}
 ```
 
 ### Parameter Decorators
@@ -220,6 +280,7 @@ Extract data from requests using parameter decorators:
 
 ```typescript
 @Post("/users")
+@Description("Create a new user account")
 createUser(
   @Body() body: any,                    // Request body
   @Query("active") active: string,      // Query parameter
@@ -235,6 +296,7 @@ createUser(
 
 ```typescript
 @Post("/users")
+@Description("Register a new user in the system")
 createUser(@Body() userData: UserDTO, @Res() res: ResponseServer) {
   // userData contains the parsed JSON body
   const user = {
@@ -249,6 +311,7 @@ createUser(@Body() userData: UserDTO, @Res() res: ResponseServer) {
 
 ```typescript
 @Get("/search")
+@Description("Search products by keyword with pagination support")
 search(
   @Query("q") query: string,
   @Query("page") page: string,
@@ -263,6 +326,7 @@ search(
 
 ```typescript
 @Get("/users/:id")
+@Description("Fetch user details by their unique ID")
 getUser(@Param("id") id: string, @Res() res: ResponseServer) {
   const user = findUserById(id);
   if (!user) {
@@ -298,6 +362,107 @@ res.cookie("session", "abc123", { httpOnly: true, maxAge: 3600000 });
 res.clearCookie("session");
 ```
 
+### Complete Example with Descriptions
+
+Here's a complete CRUD controller with proper documentation:
+
+```typescript
+import { Controller, Get, Post, Put, Delete, Param, Body, Query, Res, Description } from "azurajs";
+import type { ResponseServer } from "azurajs";
+
+@Controller("/api/blog")
+export class BlogController {
+  @Get("/posts")
+  @Description("Get all blog posts with optional pagination and filtering")
+  getAllPosts(
+    @Query("page") page: string,
+    @Query("limit") limit: string,
+    @Query("category") category: string,
+    @Res() res: ResponseServer
+  ) {
+    const posts = fetchPosts({
+      page: parseInt(page) || 1,
+      limit: parseInt(limit) || 10,
+      category
+    });
+    res.json(posts);
+  }
+
+  @Get("/posts/:id")
+  @Description("Get a single blog post by its ID")
+  getPostById(@Param("id") id: string, @Res() res: ResponseServer) {
+    const post = findPostById(id);
+    if (!post) {
+      res.status(404).json({ error: "Post not found" });
+      return;
+    }
+    res.json(post);
+  }
+
+  @Post("/posts")
+  @Description("Create a new blog post")
+  createPost(@Body() postData: any, @Res() res: ResponseServer) {
+    const newPost = {
+      id: Date.now().toString(),
+      ...postData,
+      createdAt: new Date().toISOString()
+    };
+    savePost(newPost);
+    res.status(201).json(newPost);
+  }
+
+  @Put("/posts/:id")
+  @Description("Update an existing blog post completely")
+  updatePost(
+    @Param("id") id: string,
+    @Body() postData: any,
+    @Res() res: ResponseServer
+  ) {
+    const updatedPost = updatePostById(id, postData);
+    if (!updatedPost) {
+      res.status(404).json({ error: "Post not found" });
+      return;
+    }
+    res.json(updatedPost);
+  }
+
+  @Delete("/posts/:id")
+  @Description("Delete a blog post permanently")
+  deletePost(@Param("id") id: string, @Res() res: ResponseServer) {
+    const deleted = deletePostById(id);
+    if (!deleted) {
+      res.status(404).json({ error: "Post not found" });
+      return;
+    }
+    res.status(204).send();
+  }
+
+  @Get("/posts/:id/comments")
+  @Description("Get all comments for a specific blog post")
+  getPostComments(@Param("id") id: string, @Res() res: ResponseServer) {
+    const comments = fetchCommentsByPostId(id);
+    res.json(comments);
+  }
+
+  @Post("/posts/:id/comments")
+  @Description("Add a new comment to a blog post")
+  addComment(
+    @Param("id") postId: string,
+    @Body() commentData: any,
+    @Res() res: ResponseServer
+  ) {
+    const comment = {
+      id: Date.now().toString(),
+      postId,
+      ...commentData,
+      createdAt: new Date().toISOString()
+    };
+    saveComment(comment);
+    res.status(201).json(comment);
+  }
+}
+```
+
 ## Configuration
 
 ### Environment-based Configuration
@@ -307,6 +472,7 @@ You can create different config files:
 ```typescript
 // azura.config.development.ts
 export default {
+  name: "AzuraJS API",
   environment: "development",
   server: { port: 3000 },
   logging: { enabled: true, showDetails: true }
@@ -314,6 +480,7 @@ export default {
 
 // azura.config.production.ts
 export default {
+  name: "AzuraJS API",
   environment: "production",
   server: { port: 8080, cluster: true },
   logging: { enabled: false }
@@ -324,6 +491,8 @@ export default {
 
 ```typescript
 const config: ConfigTypes = {
+  // API Name
+  name: "AzuraJS API",
   // Environment mode
   environment: "development" | "production",
   
