@@ -9,6 +9,7 @@ import path from "node:path";
 type SupportedConfigFile = ".js" | ".ts" | ".json" | ".yaml" | ".yml";
 
 export type ConfigTypes = {
+  name?: string;
   environment?: "development" | "production";
   debug?: boolean;
   server?: {
