@@ -148,6 +148,7 @@ git push origin feature/your-feature-name
 // ✅ Good
 export class MyController {
   @Get("/users/:id")
+  @Description("Search for the parameter user.")
   getUser(@Param("id") id: string, @Res() res: ResponseServer) {
     res.json({ id });
   }
@@ -156,6 +157,7 @@ export class MyController {
 // ❌ Bad
 export class MyController {
   @Get("/users/:id")
+  @Description("Search for the parameter user.")
   getUser(@Param("id") id: any, @Res() res: any) {
     res.json({id})
   }
@@ -168,7 +170,7 @@ export class MyController {
 - **Functions/Methods**: camelCase (e.g., `getUser`, `parseBody`)
 - **Constants**: UPPER_SNAKE_CASE (e.g., `DEFAULT_PORT`, `MAX_RETRIES`)
 - **Files**: PascalCase for classes, camelCase for utilities
-- **Decorators**: PascalCase (e.g., `@Get`, `@Controller`)
+- **Decorators**: PascalCase (e.g., `@Get`, `@Controller`, `@Description`)
 
 ### Comments
 
